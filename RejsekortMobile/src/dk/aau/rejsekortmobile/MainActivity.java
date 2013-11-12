@@ -1,17 +1,29 @@
 package dk.aau.rejsekortmobile;
 
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.view.Menu;
+import org.androidannotations.annotations.Click;
+import org.androidannotations.annotations.EActivity;
+import org.androidannotations.annotations.ViewById;
 
-public class MainActivity extends FragmentActivity {
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Menu;
+import android.widget.TextView;
+
+@EActivity(R.layout.activity_main)
+public class MainActivity extends Activity {
+
+	@ViewById
+	TextView textView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-		
-		
+
+	}
+
+	@Click
+	void textViewClicked(){
+		textView.setText("clicked");
 	}
 
 	@Override
