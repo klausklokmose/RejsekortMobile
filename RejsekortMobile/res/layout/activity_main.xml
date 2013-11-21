@@ -16,4 +16,12 @@
         android:layout_alignParentRight="true"
         android:text="@string/check_in" />
 
+    <Button
+        android:id="@+id/leavingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Leaving geofence" />
+
 </RelativeLayout>

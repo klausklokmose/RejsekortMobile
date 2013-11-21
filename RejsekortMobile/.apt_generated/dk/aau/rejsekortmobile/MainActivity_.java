@@ -72,6 +72,7 @@ public final class MainActivity_
     @Override
     public void onViewChanged(HasViews hasViews) {
         checkInButton = ((Button) hasViews.findViewById(id.checkInButton));
+        leavingButton = ((Button) hasViews.findViewById(id.leavingButton));
         if (hasViews.findViewById(id.checkInButton)!= null) {
             hasViews.findViewById(id.checkInButton).setOnClickListener(new OnClickListener() {
 

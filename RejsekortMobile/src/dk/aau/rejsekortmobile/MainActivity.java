@@ -15,6 +15,9 @@ public class MainActivity extends Activity {
 
 	@ViewById
 	Button checkInButton;
+	
+	@ViewById
+	Button leavingButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
