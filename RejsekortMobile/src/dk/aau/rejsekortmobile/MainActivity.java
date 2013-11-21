@@ -7,38 +7,51 @@ import org.androidannotations.annotations.ViewById;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends Activity {
 	
 
-	@ViewById
-	Button checkInButton;
+	@ViewById(R.id.checkInImg)
+	ImageView checkInImg;
 	
 	@ViewById
 	Button leavingButton;
+	
+	@ViewById(R.id.progressBarSpinner)
+	ProgressBar progressBarSpinner;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+//		progressBarSpinner = (ProgressBar)findViewById(R.id.progressBarSpinner);
+//		progressBarSpinner.setVisibility(View.INVISIBLE);
 		
+//		progressBarSpinner.setVisibility(View.INVISIBLE);
 	}
 
 	@Click
-	void checkInButtonClicked() {
+	void checkInImgClicked() {
 		//Send check in message to Rejsekort server
 		boolean checkIn = checkInUser();
 		if (checkIn){
-			checkInButton.setText("Checked in");
+			checkInImg.setImageResource(R.drawable.rejsekort_blanck);
+			progressBarSpinner.setVisibility(View.VISIBLE);
 			
 		}
 	}
 
-	private static boolean checkInUser() {
+	@Click
+	void leavingButtonClicked(){
+		progressBarSpinner.setVisibility(View.INVISIBLE);
+	}
+	private boolean checkInUser() {
 		// TODO Send check in message to Rejsekort server
 		//URL TO SERVER
-		
 		//GET RESULT
 		
 		//IS RESULT OK?

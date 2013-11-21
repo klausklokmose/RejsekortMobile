@@ -13,6 +13,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import dk.aau.rejsekortmobile.R.id;
 import dk.aau.rejsekortmobile.R.layout;
 import org.androidannotations.api.view.HasViews;
@@ -71,15 +73,28 @@ public final class MainActivity_
 
     @Override
     public void onViewChanged(HasViews hasViews) {
+        checkInImg = ((ImageView) hasViews.findViewById(id.checkInImg));
         leavingButton = ((Button) hasViews.findViewById(id.leavingButton));
-        checkInButton = ((Button) hasViews.findViewById(id.checkInButton));
-        if (hasViews.findViewById(id.checkInButton)!= null) {
-            hasViews.findViewById(id.checkInButton).setOnClickListener(new OnClickListener() {
+        progressBarSpinner = ((ProgressBar) hasViews.findViewById(id.progressBarSpinner));
+        if (hasViews.findViewById(id.checkInImg)!= null) {
+            hasViews.findViewById(id.checkInImg).setOnClickListener(new OnClickListener() {
 
 
                 @Override
                 public void onClick(View view) {
-                    MainActivity_.this.checkInButtonClicked();
+                    MainActivity_.this.checkInImgClicked();
+                }
+
+            }
+            );
+        }
+        if (hasViews.findViewById(id.leavingButton)!= null) {
+            hasViews.findViewById(id.leavingButton).setOnClickListener(new OnClickListener() {
+
+
+                @Override
+                public void onClick(View view) {
+                    MainActivity_.this.leavingButtonClicked();
                 }
 
             }
