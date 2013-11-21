@@ -31,13 +31,20 @@ public class MainActivity extends Activity {
 		boolean checkIn = checkInUser();
 		if (checkIn){
 			checkInButton.setText("Checked in");
+			
 		}
 	}
 
 	private static boolean checkInUser() {
 		// TODO Send check in message to Rejsekort server
+		//URL TO SERVER
 		
+		//GET RESULT
+		
+		//IS RESULT OK?
 		return true;
+		//ELSE RETURN FALSE
+		
 	}
 
 	@Override
