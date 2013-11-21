@@ -11,6 +11,7 @@ import android.widget.Button;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends Activity {
+	
 
 	@ViewById
 	Button checkInButton;
