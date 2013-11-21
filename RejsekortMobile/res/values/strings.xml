@@ -4,5 +4,6 @@
     <string name="app_name">RejsekortMobile</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="check_in">Check-in</string>
 
 </resources>

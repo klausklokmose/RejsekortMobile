@@ -12,7 +12,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.TextView;
+import android.widget.Button;
 import dk.aau.rejsekortmobile.R.id;
 import dk.aau.rejsekortmobile.R.layout;
 import org.androidannotations.api.view.HasViews;
@@ -71,14 +71,14 @@ public final class MainActivity_
 
     @Override
     public void onViewChanged(HasViews hasViews) {
-        textView = ((TextView) hasViews.findViewById(id.textView));
-        if (hasViews.findViewById(id.textView)!= null) {
-            hasViews.findViewById(id.textView).setOnClickListener(new OnClickListener() {
+        checkInButton = ((Button) hasViews.findViewById(id.checkInButton));
+        if (hasViews.findViewById(id.checkInButton)!= null) {
+            hasViews.findViewById(id.checkInButton).setOnClickListener(new OnClickListener() {
 
 
                 @Override
                 public void onClick(View view) {
-                    MainActivity_.this.textViewClicked();
+                    MainActivity_.this.checkInButtonClicked();
                 }
 
             }

@@ -7,23 +7,33 @@ import org.androidannotations.annotations.ViewById;
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
-import android.widget.TextView;
+import android.widget.Button;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends Activity {
 
 	@ViewById
-	TextView textView;
+	Button checkInButton;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
 	}
 
 	@Click
-	void textViewClicked(){
-		textView.setText("clicked");
+	void checkInButtonClicked() {
+		//Send check in message to Rejsekort server
+		boolean checkIn = checkInUser();
+		if (checkIn){
+			checkInButton.setText("Checked in");
+		}
+	}
+
+	private static boolean checkInUser() {
+		// TODO Send check in message to Rejsekort server
+		
+		return true;
 	}
 
 	@Override
