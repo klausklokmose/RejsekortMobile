@@ -14,6 +14,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import dk.aau.rejsekortmobile.R.id;
 import dk.aau.rejsekortmobile.R.layout;
@@ -73,9 +74,35 @@ public final class MainActivity_
 
     @Override
     public void onViewChanged(HasViews hasViews) {
+        geofenceToggle = ((Button) hasViews.findViewById(id.geofenceToggle));
         checkInImg = ((ImageView) hasViews.findViewById(id.checkInImg));
-        leavingButton = ((Button) hasViews.findViewById(id.leavingButton));
+        listView = ((ListView) hasViews.findViewById(id.listView));
         progressBarSpinner = ((ProgressBar) hasViews.findViewById(id.progressBarSpinner));
+        addSSIDbutton = ((Button) hasViews.findViewById(id.addSSIDbutton));
+        if (hasViews.findViewById(id.geofenceToggle)!= null) {
+            hasViews.findViewById(id.geofenceToggle).setOnClickListener(new OnClickListener() {
+
+
+                @Override
+                public void onClick(View view) {
+                    MainActivity_.this.geofenceToggleClicked();
+                }
+
+            }
+            );
+        }
+        if (hasViews.findViewById(id.addSSIDbutton)!= null) {
+            hasViews.findViewById(id.addSSIDbutton).setOnClickListener(new OnClickListener() {
+
+
+                @Override
+                public void onClick(View view) {
+                    MainActivity_.this.addSSIDbuttonClicked();
+                }
+
+            }
+            );
+        }
         if (hasViews.findViewById(id.checkInImg)!= null) {
             hasViews.findViewById(id.checkInImg).setOnClickListener(new OnClickListener() {
 
@@ -83,18 +110,6 @@ public final class MainActivity_
                 @Override
                 public void onClick(View view) {
                     MainActivity_.this.checkInImgClicked();
-                }
-
-            }
-            );
-        }
-        if (hasViews.findViewById(id.leavingButton)!= null) {
-            hasViews.findViewById(id.leavingButton).setOnClickListener(new OnClickListener() {
-
-
-                @Override
-                public void onClick(View view) {
-                    MainActivity_.this.leavingButtonClicked();
                 }
 
             }

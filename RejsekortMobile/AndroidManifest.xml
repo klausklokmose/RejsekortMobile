@@ -10,6 +10,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
@@ -25,6 +26,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <receiver
+            android:name="CheckInOut"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="dk.aau.rejsekortmobile.CHECK_IN" />
+            </intent-filter>
+        </receiver>
+        <service 
+            android:name="MyService"
+            android:enabled="true"
+            android:exported="false"></service>
     </application>
 
 </manifest>
