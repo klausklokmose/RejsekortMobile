@@ -34,14 +34,6 @@
 
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/listView"
-        android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_weight="50" >
-
-    </ListView>
-
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

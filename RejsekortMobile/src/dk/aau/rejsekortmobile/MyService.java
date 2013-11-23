@@ -178,6 +178,7 @@ public class MyService extends IntentService {
 
 	@Override
 	public void onCreate() {
+		super.onCreate();
 		handler = new Handler();
 	}
 

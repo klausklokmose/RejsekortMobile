@@ -8,20 +8,20 @@ import org.androidannotations.annotations.ViewById;
 
 import android.app.Activity;
 import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 
 @EActivity(R.layout.activity_main)
-public class MainActivity extends Activity implements
-		OnSharedPreferenceChangeListener {
+public class MainActivity extends Activity {
 
 	private ArrayList<StationStop> stationStops;
 	private MOT current_MOT;
@@ -38,8 +38,8 @@ public class MainActivity extends Activity implements
 	@ViewById(R.id.addSSIDbutton)
 	Button addSSIDbutton;
 
-	@ViewById(R.id.listView)
-	ListView listView;
+//	@ViewById(R.id.listView)
+//	ListView listView;
 
 	public static User user = new User(1, "Freddy Mercury");
 	private ArrayList<StationStop> visibleList;
@@ -49,24 +49,45 @@ public class MainActivity extends Activity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// TODO populate stationStops from file
-		stationStops = new ArrayList<StationStop>();
-
-		visibleList = new ArrayList<StationStop>();
-		aa = new MyAdapter(getApplicationContext(), visibleList);
+//		// TODO populate stationStops from file
+//		stationStops = new ArrayList<StationStop>();
+//
+//		visibleList = new ArrayList<StationStop>();
+//		aa = new MyAdapter(getApplicationContext(), visibleList);
 //		listView.setAdapter(aa);
-
+		OnSharedPreferenceChangeListener sharedListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+			@Override
+			public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+					String key) {
+//				if (key.equals(CheckInOut.CHECKED_IN)) {
+				Log.d("SHARED PREFERENCE CHANGE", key);
+					if (sharedPreferences.getBoolean(CheckInOut.CHECKED_IN, false)) {
+						user.setStatus(true);
+						checkInImg.setImageResource(R.drawable.rejsekort_checked_in);
+						progressBarSpinner.setVisibility(View.INVISIBLE);
+					} else {
+						user.setStatus(false);
+						checkInImg.setImageResource(R.drawable.rejsekort_check_in);
+						progressBarSpinner.setVisibility(View.INVISIBLE);
+					}
+//				}	
+			}
+		};
+		SharedPreferences pref = getApplicationContext().getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
+				//PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+		pref.registerOnSharedPreferenceChangeListener(sharedListener);
+		
 	}
 
-	@Click
-	void addSSIDbuttonClicked() {
-		int size = visibleList.size();
-		int ssSize = stationStops.size();
-		if (ssSize > size) {
-			visibleList.add(stationStops.get(size));
-			aa.notifyDataSetChanged();
-		}
-	}
+//	@Click
+//	void addSSIDbuttonClicked() {
+//		int size = visibleList.size();
+//		int ssSize = stationStops.size();
+//		if (ssSize > size) {
+//			visibleList.add(stationStops.get(size));
+//			aa.notifyDataSetChanged();
+//		}
+//	}
 
 	@Click
 	void checkInImgClicked() {
@@ -109,22 +130,22 @@ public class MainActivity extends Activity implements
 		// progressBarSpinner.setVisibility(View.INVISIBLE);
 	}
 
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
-			String key) {
-		if (key.equals(CheckInOut.CHECKED_IN)) {
-			if (sharedPreferences.getBoolean(CheckInOut.CHECKED_IN, false)) {
-				user.setStatus(true);
-				checkInImg.setImageResource(R.drawable.rejsekort_checked_in);
-				progressBarSpinner.setVisibility(View.INVISIBLE);
-			} else {
-				user.setStatus(false);
-				checkInImg.setImageResource(R.drawable.rejsekort_check_in);
-				progressBarSpinner.setVisibility(View.INVISIBLE);
-			}
-		}
-
-	}
+//	@Override
+//	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences,
+//			String key) {
+//		if (key.equals(CheckInOut.CHECKED_IN)) {
+//			if (sharedPreferences.getBoolean(CheckInOut.CHECKED_IN, false)) {
+//				user.setStatus(true);
+//				checkInImg.setImageResource(R.drawable.rejsekort_checked_in);
+//				progressBarSpinner.setVisibility(View.INVISIBLE);
+//			} else {
+//				user.setStatus(false);
+//				checkInImg.setImageResource(R.drawable.rejsekort_check_in);
+//				progressBarSpinner.setVisibility(View.INVISIBLE);
+//			}
+//		}
+//
+//	}
 
 	// @Override
 	// public boolean onCreateOptionsMenu(Menu menu) {
