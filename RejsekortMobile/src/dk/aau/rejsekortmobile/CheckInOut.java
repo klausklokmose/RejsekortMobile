@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
@@ -21,6 +21,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -30,7 +31,7 @@ public class CheckInOut extends BroadcastReceiver {
 
 	public static final String CHECKED_IN = "CHECKED IN";
 
-	private final String urlToServer = "http://127.0.0.1:1337";
+	private final String urlToServer = "http://10.0.2.2:1337";
 //	private final String urlToServer = "http://google.com";
 
 	private final String CHECK_IN_OK = "CHECK IN OK";
@@ -72,11 +73,13 @@ public class CheckInOut extends BroadcastReceiver {
 //		String respon;
 		int userID = user.getID();
 		// TODO Send check in message to Rejsekort server
-		HttpGet getRequest = new HttpGet(urlToServer + "/checkin/1337");
-		getRequest.setHeader("X-Access-Token", "testToken1234");
-//		InputStream stream = null;
 		int responseCode = 0;
+		
 		try {
+			HttpGet getRequest = new HttpGet();
+			getRequest.setURI(new URI(urlToServer + "/checkin/1337"));
+			getRequest.setHeader("X-Access-Token", "testToken1234");
+//		InputStream stream = null;
 			// set up parameters such as connection timeout
 			HttpParams param = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(param, 5000);

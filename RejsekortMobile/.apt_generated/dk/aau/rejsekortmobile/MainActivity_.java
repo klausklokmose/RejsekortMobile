@@ -75,10 +75,10 @@ public final class MainActivity_
     @Override
     public void onViewChanged(HasViews hasViews) {
         geofenceToggle = ((Button) hasViews.findViewById(id.geofenceToggle));
-        checkInImg = ((ImageView) hasViews.findViewById(id.checkInImg));
         listView = ((ListView) hasViews.findViewById(id.listView));
         progressBarSpinner = ((ProgressBar) hasViews.findViewById(id.progressBarSpinner));
         addSSIDbutton = ((Button) hasViews.findViewById(id.addSSIDbutton));
+        checkInImg = ((ImageView) hasViews.findViewById(id.checkInImg));
         if (hasViews.findViewById(id.geofenceToggle)!= null) {
             hasViews.findViewById(id.geofenceToggle).setOnClickListener(new OnClickListener() {
 
