@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -21,7 +22,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -66,7 +66,7 @@ public class CheckInOut extends BroadcastReceiver {
 		// ELSE RETURN FALSE
 
 	}
-
+	
 	private void checkInUser(Context context, User user) {
 		Toast.makeText(context, "Checking in", Toast.LENGTH_SHORT).show();
 		Log.d("REJSEKORT", "CHECKING IN");
@@ -138,7 +138,7 @@ public class CheckInOut extends BroadcastReceiver {
 			Log.e("BAD RESPONSE", "Code: "+responseCode);
 		}
 	}
-
+	
 	private void checkOutUser(Context context, User user) {
 			Toast.makeText(context, "Checking out", Toast.LENGTH_SHORT).show();
 			// TODO Send check out message to Rejsekort server
@@ -146,11 +146,12 @@ public class CheckInOut extends BroadcastReceiver {
 	//			String respon;
 			int userID = user.getID();
 			// TODO Send check in message to Rejsekort server
-			HttpGet getRequest = new HttpGet(urlToServer + "/checkout");
-			getRequest.setHeader("X-Access-Token", "testToken1234");
-//			InputStream stream = null;
 			int responseCode = 0;
+//			InputStream stream = null;
 			try {
+				HttpGet getRequest = new HttpGet();
+				getRequest.setURI(new URI(urlToServer + "/checkout"));
+				getRequest.setHeader("X-Access-Token", "testToken1234");
 				// set up parameters such as connection timeout
 				HttpParams param = new BasicHttpParams();
 				HttpConnectionParams.setConnectionTimeout(param, 5000);
@@ -167,6 +168,9 @@ public class CheckInOut extends BroadcastReceiver {
 				e.printStackTrace();
 			} catch (IOException e) {
 				Log.d("CATCH", "IO EXCEPTION");
+				e.printStackTrace();
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			// GET RESULT
