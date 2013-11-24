@@ -23,24 +23,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 public class CheckInOut extends BroadcastReceiver {
 
 	public static final String CHECKED_IN = "CHECKED IN";
 
-	private final String urlToServer = "http://10.0.2.2:1337";
+	private final String urlToServer = "http://127.0.0.1:1337";
 	// private final String urlToServer = "http://google.com";
 
 	private final String CHECK_IN_OK = "CHECK IN OK";
 	private final String CHECK_OUT_OK = "CHECK OUT OK";
+
+	private Handler handler;
+
+	private Object pref;
 	public static final String CHECKING_IN = "CHECKING IN";
 
 	// public static final String CHECKING_OUT = "CHECKING OUT";
+
+//	public CheckInOut(Handler handler) {
+//		// TODO Auto-generated constructor stub
+//		this.handler = handler;
+//	}
 
 	/*
 	 * When the user confirms a check-in notification the system should send the
@@ -48,6 +57,7 @@ public class CheckInOut extends BroadcastReceiver {
 	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
+		pref = context.getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
 		Log.d("ON receive", "ON RECEIVE STARTED");
 		if (context == null) {
 			Log.d("CONTEXT", "NULL");
@@ -75,6 +85,7 @@ public class CheckInOut extends BroadcastReceiver {
 		private Context context;
 		private User user;
 		private boolean checkingIn;
+		private SharedPreferences pref;
 
 		public LongOperation(Context context, User user, boolean checkingIn) {
 			this.context = context;
@@ -112,10 +123,15 @@ public class CheckInOut extends BroadcastReceiver {
 						.getSystemService(Activity.NOTIFICATION_SERVICE);
 				mNotifyMgr.notify(1, mBuilder.build());
 				// ---------------------------------------------------------------------------------
-				SharedPreferences preferences = context.getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
-				SharedPreferences.Editor editor = preferences.edit();
+				pref = context.getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
+				SharedPreferences.Editor editor = pref.edit();
 				editor.putBoolean(CHECKED_IN, true);
 				editor.commit();
+				//----------------------------------------------------------------------------------
+				//Updates the MainActivity view
+				Intent i = new Intent(context, MainActivity_.class);
+					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				context.startActivity(i);
 				
 				// Start the service
 				Intent in = new Intent(context, MyService.class);
@@ -135,13 +151,13 @@ public class CheckInOut extends BroadcastReceiver {
 
 		try {
 			HttpGet getRequest = new HttpGet();
-			getRequest.setURI(new URI(urlToServer + "/checkin/1337"));
+			getRequest.setURI(new URI(urlToServer + "/checkin/"+userID));
 			getRequest.setHeader("X-Access-Token", "testToken1234");
 			// InputStream stream = null;
 			// set up parameters such as connection timeout
 			HttpParams param = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(param, 5000);
-			HttpConnectionParams.setSoTimeout(param, 5000);
+			HttpConnectionParams.setConnectionTimeout(param, 2500);
+			HttpConnectionParams.setSoTimeout(param, 2500);
 
 			HttpResponse response = new DefaultHttpClient(param)
 					.execute(getRequest);
@@ -155,6 +171,7 @@ public class CheckInOut extends BroadcastReceiver {
 		} catch (IOException e) {
 			Log.d("CATCH", "IO EXCEPTION");
 			e.printStackTrace();
+			
 		} catch (Exception e) {
 			Log.d("CATCH", "EXCEPTION");
 			e.printStackTrace();

@@ -5,8 +5,12 @@ import java.util.ArrayList;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -30,26 +34,26 @@ public class MyService extends IntentService {
 		Log.d("PARAMETER SENT TO SERVICE", message);
 
 		if (message.equals(ENTER_GEOFENCE)) {
+			Log.d("SERVICE", "STARTING PROCESS");
 			
 			// get check in status
 			boolean checkedIn = getUsersCheckInStatus();
-			
+
 			// get user's current location
 			String[] location = getUserLocation();
 			
 			// get nearby stations and bus stops
 			NBstationStops = getNBstationStops();
 			if (checkedIn) {
-				SharedPreferences preferences = PreferenceManager
-						.getDefaultSharedPreferences(this);
-				inGeofence = preferences.getBoolean(ENTER_GEOFENCE, false);
+				SharedPreferences pref = getApplicationContext().getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
+				inGeofence = pref.getBoolean(ENTER_GEOFENCE, false);
 
 				do {
 					// Look up SSIDs at least once
 					foundSSIDs = scanForSSIDs();
 					
 					// check if user has left the geofence
-					inGeofence = preferences.getBoolean(ENTER_GEOFENCE, false);
+					inGeofence = pref.getBoolean(ENTER_GEOFENCE, false);
 				} while (inGeofence);
 
 				// determine the transit ID from the found SSIDs
@@ -69,9 +73,8 @@ public class MyService extends IntentService {
 				//Setup geofences for nearby stations and bus stops
 				setupGeoFences(NBstationStops);
 				
-				SharedPreferences preferences = PreferenceManager
-						.getDefaultSharedPreferences(this);
-				inGeofence = preferences.getBoolean(ENTER_GEOFENCE, false);
+				SharedPreferences pref = getApplicationContext().getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
+				inGeofence = pref.getBoolean(ENTER_GEOFENCE, false);
 				
 				if(inGeofence){
 					cancelGeofences();
@@ -94,7 +97,13 @@ public class MyService extends IntentService {
 				.setContentTitle("Entered geofence").setContentText(str);
 		// removes the notification when it is pressed by the user.
 		mBuilder.setAutoCancel(true);
-		
+			Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+			mBuilder.setSound(alarmSound);
+//			mBuilder.setSound(Uri.parse("android.resource://"
+//		            + getApplicationContext().getPackageName() + "/" + R.raw.siren));
+		mBuilder.setLights(Color.BLUE, 500, 500);
+		long[] pattern = {500,500,500,500,500,500,500,500,500,500,500,500};
+		mBuilder.setVibrate(pattern);
 		//notification manager
 		NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
@@ -140,7 +149,12 @@ public class MyService extends IntentService {
 		ssids.add("AAU-3x");
 		ssids.add("AAU-4x");
 		ssids.add("AAU-5x");
-
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return ssids;
 
 	}
