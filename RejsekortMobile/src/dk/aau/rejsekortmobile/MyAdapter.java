@@ -47,7 +47,7 @@ public class MyAdapter extends BaseAdapter {
 		TextView tv;
 		if (convertView == null) {
 			view = inflater.inflate(R.layout.list_thing, parent, false);
-			tv = (TextView) view.findViewById(R.id.textView1);
+			tv = (TextView) view.findViewById(R.id.address);
 			tv.setText(getItem(position).getStationName()+" - Zone: "+getItem(position).getZone());
 			ViewHolder viewHolder = new ViewHolder();
 			viewHolder.tv = tv;

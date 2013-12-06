@@ -26,6 +26,7 @@ public class MyService extends IntentService {
 	private ArrayList<String> foundSSIDs;
 	private boolean inGeofence;
 	private int currentTransitID;
+	private SharedPreferences pref;
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
@@ -36,6 +37,7 @@ public class MyService extends IntentService {
 		if (message.equals(ENTER_GEOFENCE)) {
 			Log.d("SERVICE", "STARTING PROCESS");
 			
+			pref = getApplicationContext().getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
 			// get check in status
 			boolean checkedIn = getUsersCheckInStatus();
 
@@ -45,8 +47,6 @@ public class MyService extends IntentService {
 			// get nearby stations and bus stops
 			NBstationStops = getNBstationStops();
 			if (checkedIn) {
-				SharedPreferences pref = getApplicationContext().getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
-				inGeofence = pref.getBoolean(ENTER_GEOFENCE, false);
 
 				do {
 					// Look up SSIDs at least once
@@ -54,7 +54,7 @@ public class MyService extends IntentService {
 					
 					// check if user has left the geofence
 					inGeofence = pref.getBoolean(ENTER_GEOFENCE, false);
-				} while (inGeofence);
+				} while (pref.getBoolean(ENTER_GEOFENCE, false));
 
 				// determine the transit ID from the found SSIDs
 				currentTransitID = determineIdFromTransit();
@@ -73,7 +73,6 @@ public class MyService extends IntentService {
 				//Setup geofences for nearby stations and bus stops
 				setupGeoFences(NBstationStops);
 				
-				SharedPreferences pref = getApplicationContext().getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
 				inGeofence = pref.getBoolean(ENTER_GEOFENCE, false);
 				
 				if(inGeofence){
@@ -81,7 +80,8 @@ public class MyService extends IntentService {
 					//ACTION: User entered geofence
 					showNotification("Please, remember to check in");
 				}else{
-					
+					//TODO
+					Log.d("MY SERVICE", "NOT IN GEOFENCE");
 				}
 			}
 			//END if message equals ENTER_GEOFENCE
@@ -160,9 +160,7 @@ public class MyService extends IntentService {
 	}
 
 	private boolean getUsersCheckInStatus() {
-		SharedPreferences preferences = PreferenceManager
-				.getDefaultSharedPreferences(this);
-		return preferences.getBoolean(CheckInOut.CHECKED_IN, false);
+		return pref.getBoolean(CheckInOut.CHECKED_IN, false);
 	}
 
 	private void setupGeoFences(ArrayList<StationStop> nBstationStops2) {
