@@ -1,10 +1,6 @@
 package dk.aau.rejsekortmobile;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -23,7 +19,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -37,20 +32,14 @@ public class CheckInOut extends BroadcastReceiver {
 			+ ":" + MainActivity.serverPort;
 	// private final String urlToServer = "http://google.com";
 
-	private final String CHECK_IN_OK = "CHECK IN OK";
-	private final String CHECK_OUT_OK = "CHECK OUT OK";
+	private SharedPreferences pref;
 
-	private Handler handler;
+	// private final String CHECK_IN_OK = "CHECK IN OK";
+	// private final String CHECK_OUT_OK = "CHECK OUT OK";
 
-	private Object pref;
+	// private Handler handler;
+
 	public static final String CHECKING_IN = "CHECKING IN";
-
-	// public static final String CHECKING_OUT = "CHECKING OUT";
-
-	// public CheckInOut(Handler handler) {
-	// // TODO Auto-generated constructor stub
-	// this.handler = handler;
-	// }
 
 	/*
 	 * When the user confirms a check-in notification the system should send the
@@ -85,7 +74,6 @@ public class CheckInOut extends BroadcastReceiver {
 		private Context context;
 		private User user;
 		private boolean checkingIn;
-		private SharedPreferences pref;
 
 		public ServerRequestTask(Context context, User user, boolean checkingIn) {
 			this.context = context;
@@ -102,19 +90,18 @@ public class CheckInOut extends BroadcastReceiver {
 				}
 			} else {
 				boolean working = checkOutUser(context, user);
-				if(working){
+				if (working) {
 					return "CHECKED OUT";
 				}
 			}
-			return "Executed";
+			return "failure";
 		}
 
 		@Override
 		protected void onPostExecute(String result) {
 			if (result.equals("CHECKED IN")) {
 
-				// Notification that the user is checked in (stays as long as
-				// the user is checked in)
+				// Notification that the user is checked in (stays as long as the user is checked in)
 				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 						context).setSmallIcon(R.drawable.rejsekort_logo)
 						.setContentTitle("Rejsekort status")
@@ -134,48 +121,42 @@ public class CheckInOut extends BroadcastReceiver {
 				// ----------------------------------------------------------------------------------
 				// Updates the MainActivity view
 				MainActivity.stopLoading();
-//				Intent i = new Intent(context, MainActivity_.class);
-//				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//				context.startActivity(i);
-				
 
 				// Start the service
 				Intent in = new Intent(context, MyService.class);
 				in.putExtra(MyService.PARAM_MESSAGE, MyService.ENTER_GEOFENCE);
 				context.startService(in);
-			}else if(result.equals("CHECKED OUT")){
-				pref = context.getSharedPreferences("Rejsekortmobile",
-						Context.MODE_MULTI_PROCESS);
+				
+			} else if (result.equals("CHECKED OUT")) {		//Checked out
+				//save the result i shared preferences
 				SharedPreferences.Editor editor = pref.edit();
 				editor.putBoolean(CHECKED_IN, false);
 				editor.commit();
-				
+
+				//removes any notifications from this app
 				NotificationManager mNotifyMgr = (NotificationManager) context
 						.getSystemService(Activity.NOTIFICATION_SERVICE);
 				mNotifyMgr.cancelAll();
-				
+
 				// Updates the MainActivity view
 				MainActivity.stopLoading();
-//				Intent i = new Intent(context, MainActivity_.class);
-//				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//				context.startActivity(i);
+			}else{
+				Toast.makeText(context, "Failed to communicate with Rejsekort server", Toast.LENGTH_LONG).show();
 			}
 		}
 	}
 
 	private boolean checkInUser(Context context, User user) {
-		// Toast.makeText(context, "Checking in", Toast.LENGTH_SHORT).show();
-		Log.d("REJSEKORT", "CHECKING IN");
-		// String respon;
+		Log.d("REJSEKORT", "CHECKING IN...");
+
 		int userID = user.getID();
-		// TODO Send check in message to Rejsekort server
 		int responseCode = 0;
 
 		try {
 			HttpGet getRequest = new HttpGet();
 			getRequest.setURI(new URI(urlToServer + "/checkin/" + userID));
 			getRequest.setHeader("X-Access-Token", "testToken1234");
-			// InputStream stream = null;
+
 			// set up parameters such as connection timeout
 			HttpParams param = new BasicHttpParams();
 			HttpConnectionParams.setConnectionTimeout(param, 2500);
@@ -184,8 +165,6 @@ public class CheckInOut extends BroadcastReceiver {
 			HttpResponse response = new DefaultHttpClient(param)
 					.execute(getRequest);
 			responseCode = response.getStatusLine().getStatusCode();
-
-			// stream = response.getEntity().getContent();
 
 		} catch (ClientProtocolException e) {
 			Log.d("CATCH", "CLIENT PROTOCOL EXCEPTION");
@@ -198,19 +177,14 @@ public class CheckInOut extends BroadcastReceiver {
 			Log.d("CATCH", "EXCEPTION");
 			e.printStackTrace();
 		}
-		// GET RESULT
-		// respon = consumeStream(stream);
-
-		// TODO testing
-		// respon = CHECK_IN_OK;
 
 		// IS RESULT OK?
 		if (responseCode == 200) {
-
+			// return true to indicate that everything went well
 			return true;
 
 		} else {
-			// TODO handle a bad response from Rejsekort server
+			// handle a bad response from Rejsekort server
 			Log.e("BAD RESPONSE", "Code: " + responseCode);
 			return false;
 		}
@@ -218,11 +192,10 @@ public class CheckInOut extends BroadcastReceiver {
 
 	private boolean checkOutUser(Context context, User user) {
 		// Toast.makeText(context, "Checking out", Toast.LENGTH_SHORT).show();
-		// TODO Send check out message to Rejsekort server
+		//Send check out message to Rejsekort server
 		Log.d("REJSEKORT", "CHECKING IN");
 		// String respon;
-		int userID = user.getID();
-		// TODO Send check in message to Rejsekort server
+		// Send check in message to Rejsekort server
 		int responseCode = 0;
 		// InputStream stream = null;
 		try {
@@ -238,8 +211,6 @@ public class CheckInOut extends BroadcastReceiver {
 					.execute(getRequest);
 			responseCode = response.getStatusLine().getStatusCode();
 
-			// stream = response.getEntity().getContent();
-
 		} catch (ClientProtocolException e) {
 			Log.d("CATCH", "CLIENT PROTOCOL EXCEPTION");
 			e.printStackTrace();
@@ -247,14 +218,11 @@ public class CheckInOut extends BroadcastReceiver {
 			Log.d("CATCH", "IO EXCEPTION");
 			e.printStackTrace();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
+			Log.d("CATCH", "URI EXCEPTION");
 			e.printStackTrace();
 		}
-		// GET RESULT
-		// respon = consumeStream(stream);
-		// TODO testing
-		// String respon = CHECK_OUT_OK;
-		// IS RESULT OK?
+
+		// IS RESPONSE OK?
 		if (responseCode == 200) {
 			// remove check in notification
 			NotificationManager mNotifyMgr = (NotificationManager) context
@@ -268,30 +236,27 @@ public class CheckInOut extends BroadcastReceiver {
 			editor.commit();
 			return true;
 		} else {
-			// TODO handle bad response from Rejsekort server
+			// handle bad response from Rejsekort server
 			Log.e("BAD RESPONSE", "Code: " + responseCode);
 			return false;
 		}
 	}
 
-	private String consumeStream(InputStream is) {
-		try {
-			BufferedReader read = new BufferedReader(new InputStreamReader(is,
-					"UTF-8"));
-			StringBuilder responseBuilder = new StringBuilder();
-			String line;
-			while ((line = read.readLine()) != null) {
-				responseBuilder.append(line);
-			}
-			return responseBuilder.toString();
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-
-	}
+//	private String consumeStream(InputStream is) {
+//		try {
+//			BufferedReader read = new BufferedReader(new InputStreamReader(is,
+//					"UTF-8"));
+//			StringBuilder responseBuilder = new StringBuilder();
+//			String line;
+//			while ((line = read.readLine()) != null) {
+//				responseBuilder.append(line);
+//			}
+//			return responseBuilder.toString();
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		return null;
+//	}
 }

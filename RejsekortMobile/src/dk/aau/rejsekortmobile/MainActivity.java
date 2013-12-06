@@ -19,15 +19,12 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends Activity {
 
-	private ArrayList<StationStop> stationStops;
-	private MOT current_MOT;
 
 	@ViewById(R.id.checkInImg)
 	static ImageView checkInImg;
@@ -50,12 +47,11 @@ public class MainActivity extends Activity {
 	@ViewById(R.id.loginText)
 	static TextView loginText;
 
-	// @ViewById(R.id.listView)
-	// ListView listView;
+	private ArrayList<StationStop> stationStops;
+	private MOT current_MOT;
+	private ArrayList<StationStop> visibleList;
 
 	public static User user = new User(1337, "Freddy Mercury");
-	private ArrayList<StationStop> visibleList;
-	private MyAdapter aa;
 	private static Animation animation;
 	private static SharedPreferences pref;
 	public static String serverAddress = "192.168.43.104";
@@ -82,17 +78,11 @@ public class MainActivity extends Activity {
 		if (pref.getBoolean(CheckInOut.CHECKED_IN, false)) {
 			Log.d("PREF", "CHECKED IN");
 			user.setStatus(true);
-			// TODO
-			// checkInImg.setImageResource(R.drawable.rejsekort_checked_in);
 			loginText.setText("Checked in");
-			// progressBarSpinner.setVisibility(View.INVISIBLE);
 		} else {
 			Log.d("PREF", "CHECKED OUT");
 			user.setStatus(false);
-			// TODO
-			// checkInImg.setImageResource(R.drawable.rejsekort_check_in);
 			loginText.setText("Check in");
-			// progressBarSpinner.setVisibility(View.INVISIBLE);
 		}
 
 	}
@@ -109,17 +99,11 @@ public class MainActivity extends Activity {
 		if (pref.getBoolean(CheckInOut.CHECKED_IN, false)) {
 			Log.d("PREF", "CHECKED IN");
 			user.setStatus(true);
-			// TODO
-			// checkInImg.setImageResource(R.drawable.rejsekort_checked_in);
 			loginText.setText("Checked in");
-			// progressBarSpinner.setVisibility(View.INVISIBLE);
 		} else {
 			Log.d("PREF", "CHECKED OUT");
 			user.setStatus(false);
-			// TODO
-			// checkInImg.setImageResource(R.drawable.rejsekort_check_in);
 			loginText.setText("Check in");
-			// progressBarSpinner.setVisibility(View.INVISIBLE);
 		}
 	}
 
@@ -137,7 +121,7 @@ public class MainActivity extends Activity {
 
 	@Click
 	void checkoutClicked() {
-		// TODO this is a manual overwrite!
+		// this is a manual overwrite!
 		pref = getApplicationContext().getSharedPreferences("Rejsekortmobile",
 				Context.MODE_MULTI_PROCESS);
 		SharedPreferences.Editor editor = pref.edit();
