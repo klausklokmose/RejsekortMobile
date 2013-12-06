@@ -12,6 +12,7 @@
 bin/
 gen/
 .apt_generated
+*.pyc
 # Local configuration file (sdk path, etc)
 local.properties
 
