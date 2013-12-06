@@ -54,7 +54,7 @@ public class MyService extends IntentService {
 					
 					// check if user has left the geofence
 					inGeofence = pref.getBoolean(ENTER_GEOFENCE, false);
-				} while (pref.getBoolean(ENTER_GEOFENCE, false));
+				} while (inGeofence);
 
 				// determine the transit ID from the found SSIDs
 				currentTransitID = determineIdFromTransit();

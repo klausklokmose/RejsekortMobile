@@ -142,6 +142,7 @@ public class CheckInOut extends BroadcastReceiver {
 				MainActivity.stopLoading();
 			}else{
 				Toast.makeText(context, "Failed to communicate with Rejsekort server", Toast.LENGTH_LONG).show();
+				MainActivity.stopLoading();
 			}
 		}
 	}
