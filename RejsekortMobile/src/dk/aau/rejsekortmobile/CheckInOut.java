@@ -33,7 +33,8 @@ public class CheckInOut extends BroadcastReceiver {
 
 	public static final String CHECKED_IN = "CHECKED IN";
 
-	private final String urlToServer = "http://127.0.0.1:1337";
+	private final String urlToServer = "http://" + MainActivity.serverAddress
+			+ ":" + MainActivity.serverPort;
 	// private final String urlToServer = "http://google.com";
 
 	private final String CHECK_IN_OK = "CHECK IN OK";
@@ -46,10 +47,10 @@ public class CheckInOut extends BroadcastReceiver {
 
 	// public static final String CHECKING_OUT = "CHECKING OUT";
 
-//	public CheckInOut(Handler handler) {
-//		// TODO Auto-generated constructor stub
-//		this.handler = handler;
-//	}
+	// public CheckInOut(Handler handler) {
+	// // TODO Auto-generated constructor stub
+	// this.handler = handler;
+	// }
 
 	/*
 	 * When the user confirms a check-in notification the system should send the
@@ -57,11 +58,10 @@ public class CheckInOut extends BroadcastReceiver {
 	 */
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		pref = context.getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
+		pref = context.getSharedPreferences("Rejsekortmobile",
+				Context.MODE_MULTI_PROCESS);
 		Log.d("ON receive", "ON RECEIVE STARTED");
-		if (context == null) {
-			Log.d("CONTEXT", "NULL");
-		}
+
 		Toast.makeText(context, "Broadcast being processed", Toast.LENGTH_LONG)
 				.show();
 		User user = MainActivity.user;
@@ -70,24 +70,24 @@ public class CheckInOut extends BroadcastReceiver {
 				CheckInOut.CHECKING_IN);
 		// should it try to check in?
 		if (checkingIn) {
-			new LongOperation(context, user, true).execute();
+			new ServerRequestTask(context, user, true).execute();
 
 			// ELSE RETURN FALSE
 		} else { // try to check the user out
-			checkOutUser(context, user);
+			new ServerRequestTask(context, user, false).execute();
 		}
 		// ELSE RETURN FALSE
 
 	}
 
-	class LongOperation extends AsyncTask<Void, Void, String> {
+	class ServerRequestTask extends AsyncTask<Void, Void, String> {
 
 		private Context context;
 		private User user;
 		private boolean checkingIn;
 		private SharedPreferences pref;
 
-		public LongOperation(Context context, User user, boolean checkingIn) {
+		public ServerRequestTask(Context context, User user, boolean checkingIn) {
 			this.context = context;
 			this.user = user;
 			this.checkingIn = checkingIn;
@@ -97,52 +97,74 @@ public class CheckInOut extends BroadcastReceiver {
 		protected String doInBackground(Void... params) {
 			if (checkingIn) {
 				boolean working = checkInUser(context, user);
-				if (working){
+				if (working) {
 					return "CHECKED IN";
 				}
 			} else {
-				checkOutUser(context, user);
+				boolean working = checkOutUser(context, user);
+				if(working){
+					return "CHECKED OUT";
+				}
 			}
 			return "Executed";
 		}
-		
+
 		@Override
-        protected void onPostExecute(String result) {
-			if(result.equals("CHECKED IN")){
-				
+		protected void onPostExecute(String result) {
+			if (result.equals("CHECKED IN")) {
+
 				// Notification that the user is checked in (stays as long as
 				// the user is checked in)
 				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
 						context).setSmallIcon(R.drawable.rejsekort_logo)
 						.setContentTitle("Rejsekort status")
 						.setContentText("Checked in");
-				// removes the notification when it is pressed by the user.
+				// The user cannot remove the notification
 				mBuilder.setOngoing(true);
 				// notification manager
 				NotificationManager mNotifyMgr = (NotificationManager) context
 						.getSystemService(Activity.NOTIFICATION_SERVICE);
 				mNotifyMgr.notify(1, mBuilder.build());
 				// ---------------------------------------------------------------------------------
-				pref = context.getSharedPreferences("Rejsekortmobile", Context.MODE_MULTI_PROCESS);
+				pref = context.getSharedPreferences("Rejsekortmobile",
+						Context.MODE_MULTI_PROCESS);
 				SharedPreferences.Editor editor = pref.edit();
 				editor.putBoolean(CHECKED_IN, true);
 				editor.commit();
-				//----------------------------------------------------------------------------------
-				//Updates the MainActivity view
-				Intent i = new Intent(context, MainActivity_.class);
-					i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				context.startActivity(i);
+				// ----------------------------------------------------------------------------------
+				// Updates the MainActivity view
+				MainActivity.stopLoading();
+//				Intent i = new Intent(context, MainActivity_.class);
+//				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//				context.startActivity(i);
 				
+
 				// Start the service
 				Intent in = new Intent(context, MyService.class);
 				in.putExtra(MyService.PARAM_MESSAGE, MyService.ENTER_GEOFENCE);
 				context.startService(in);
+			}else if(result.equals("CHECKED OUT")){
+				pref = context.getSharedPreferences("Rejsekortmobile",
+						Context.MODE_MULTI_PROCESS);
+				SharedPreferences.Editor editor = pref.edit();
+				editor.putBoolean(CHECKED_IN, false);
+				editor.commit();
+				
+				NotificationManager mNotifyMgr = (NotificationManager) context
+						.getSystemService(Activity.NOTIFICATION_SERVICE);
+				mNotifyMgr.cancelAll();
+				
+				// Updates the MainActivity view
+				MainActivity.stopLoading();
+//				Intent i = new Intent(context, MainActivity_.class);
+//				i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//				context.startActivity(i);
 			}
 		}
 	}
 
 	private boolean checkInUser(Context context, User user) {
-//		Toast.makeText(context, "Checking in", Toast.LENGTH_SHORT).show();
+		// Toast.makeText(context, "Checking in", Toast.LENGTH_SHORT).show();
 		Log.d("REJSEKORT", "CHECKING IN");
 		// String respon;
 		int userID = user.getID();
@@ -151,7 +173,7 @@ public class CheckInOut extends BroadcastReceiver {
 
 		try {
 			HttpGet getRequest = new HttpGet();
-			getRequest.setURI(new URI(urlToServer + "/checkin/"+userID));
+			getRequest.setURI(new URI(urlToServer + "/checkin/" + userID));
 			getRequest.setHeader("X-Access-Token", "testToken1234");
 			// InputStream stream = null;
 			// set up parameters such as connection timeout
@@ -171,7 +193,7 @@ public class CheckInOut extends BroadcastReceiver {
 		} catch (IOException e) {
 			Log.d("CATCH", "IO EXCEPTION");
 			e.printStackTrace();
-			
+
 		} catch (Exception e) {
 			Log.d("CATCH", "EXCEPTION");
 			e.printStackTrace();
@@ -185,7 +207,6 @@ public class CheckInOut extends BroadcastReceiver {
 		// IS RESULT OK?
 		if (responseCode == 200) {
 
-			
 			return true;
 
 		} else {
@@ -195,8 +216,8 @@ public class CheckInOut extends BroadcastReceiver {
 		}
 	}
 
-	private void checkOutUser(Context context, User user) {
-//		Toast.makeText(context, "Checking out", Toast.LENGTH_SHORT).show();
+	private boolean checkOutUser(Context context, User user) {
+		// Toast.makeText(context, "Checking out", Toast.LENGTH_SHORT).show();
 		// TODO Send check out message to Rejsekort server
 		Log.d("REJSEKORT", "CHECKING IN");
 		// String respon;
@@ -245,9 +266,11 @@ public class CheckInOut extends BroadcastReceiver {
 			SharedPreferences.Editor editor = preferences.edit();
 			editor.putBoolean(CHECKED_IN, true);
 			editor.commit();
+			return true;
 		} else {
 			// TODO handle bad response from Rejsekort server
 			Log.e("BAD RESPONSE", "Code: " + responseCode);
+			return false;
 		}
 	}
 

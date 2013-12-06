@@ -1,6 +1,5 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
@@ -20,44 +19,106 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:src="@drawable/rejsekort_check_in" />
+            android:contentDescription="@string/image"
+            android:src="@drawable/rejsekort_blanck" />
 
-        <ProgressBar
-            android:id="@+id/progressBarSpinner"
-            style="?android:attr/progressBarStyleLarge"
+        <TextView
+            android:id="@+id/loginText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/checkInImg"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="80dp"
-            android:visibility="invisible" />
-
+            android:layout_marginTop="106dp"
+            android:text="@string/check_in"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp"
+            android:textStyle="bold" />
     </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" >
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginTop="80dp" >
 
-        <ToggleButton
-            android:id="@+id/geofenceToggle"
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:gravity="bottom" >
+
+            <TextView
+                android:id="@+id/port"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/port_"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/editPort"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="33dp"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="number" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearLayout2"
+            android:layout_alignParentLeft="true" >
+
+            <TextView
+                android:id="@+id/address"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/address_"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <EditText
+                android:id="@+id/editAddress"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:ems="10"
+                android:inputType="phone" >
+
+                <requestFocus />
+            </EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="leave geofence" />
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" >
+
+            <ToggleButton
+                android:id="@+id/geofenceToggle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/leave_geofence" />
+
+            <Button
+                android:id="@+id/addSSIDbutton"
+                style="?android:attr/buttonStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/add_ssid" />
+        </LinearLayout>
 
         <Button
-            android:id="@+id/addSSIDbutton"
-            style="?android:attr/buttonStyleSmall"
+            android:id="@+id/checkout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="add SSID" />
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/checkout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="manual overwrite checkout" />
+            android:layout_below="@+id/linearLayout3"
+            android:layout_centerHorizontal="true"
+            android:text="@string/manual_overwrite_checkout" />
+    </RelativeLayout>
 
 </LinearLayout>
