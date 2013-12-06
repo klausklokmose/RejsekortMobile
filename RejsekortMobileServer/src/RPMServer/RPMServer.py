@@ -2,16 +2,14 @@
 
 # Author: cem2ran
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
-from os import curdir, sep
-from stationstop import StationStop
 from traveler import Traveler
 from authentication import Authentication
 
-Travellers = { 42 : Traveler(42, "Cem Turan", None) }
-Stations = { 1337 : StationStop(1337, "Sydhavn st", {'lat':55.654756,'long':12.537174}, 2, 200) };
-AccessTokens = {'testToken1234' : Authentication(42, 'testToken1234')}
+Travellers = { 42 : Traveler(42, "Cem Turan", None), 43 : Traveler(43, "Klaus Klokmose Nielsen", None) }
+AccessTokens = {'testToken1234' : Authentication(42, 'testToken1234'), 'testToken5678' : Authentication(43, 'testToken5678')}
 
 PORT = 1337
+HOST = "0.0.0.0"
 
 def me(uid):
     if uid in Travellers:
@@ -20,18 +18,18 @@ def me(uid):
         return None
 
 def checkIn(uid, sid):
-    Travellers[uid].checkIn(sid)
+    return {'CheckedIn' : Travellers[uid].checkIn(sid)}
 
 def checkOut(uid):
-    Travellers[uid].checkOut()
+    return {'CheckedIn': Travellers[uid].checkOut()}
 
 #TODO
 def user():
     pass
 #TODO
-def userJournies():
+def userJournies(uid):
+    #Travellers[uid].journies.__dict__
     pass
-
 #requires_auth {}
 one_param_requests = {
                      'me' : me, #uid
@@ -86,7 +84,7 @@ class requestHandler(BaseHTTPRequestHandler):
             self.send_error(200, "Missing path. Consult API documentation")
         
 try:
-    server = HTTPServer(('127.0.0.1', PORT), requestHandler)
+    server = HTTPServer((HOST, PORT), requestHandler)
     print 'Started httpserver on port ' , PORT
     server.serve_forever()
 except KeyboardInterrupt:
