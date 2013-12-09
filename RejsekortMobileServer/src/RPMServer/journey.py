@@ -19,6 +19,7 @@ class Journey(object):
         self.wayPoints = []
         self.startTime = datetime.now().now().isoformat()
         self.addWaypoint(StationID)
+        
     def addWaypoint(self, sid):
-        self.wayPoints.append(Stations[sid]) 
+        self.wayPoints.append(Stations[sid])
         print 'Waypoints: ',self.wayPoints

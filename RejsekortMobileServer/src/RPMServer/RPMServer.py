@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Author: cem2ran
-from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
+from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 from traveler import Traveler
 from authentication import Authentication
 import socket
@@ -75,7 +75,7 @@ class requestHandler(BaseHTTPRequestHandler):
                     if len(actionId) == 0: 
                         self.send_error(200, "missing action")
                     else:
-                        output = two_param_requests[table](uid, actionId)    
+                        output = two_param_requests[table](uid, actionId)
                 else:
                     output = one_param_requests[table](uid)
                 self.sendResponse(output)

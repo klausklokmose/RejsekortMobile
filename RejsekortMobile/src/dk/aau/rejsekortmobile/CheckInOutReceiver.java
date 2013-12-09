@@ -19,6 +19,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
@@ -32,6 +33,8 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 	private SharedPreferences pref;
 	private MainActivity main;
 	NotificationManager mNotifyMgr;
+
+	private String stationID;
 
 	/*
 	 * When the user confirms a check-in notification the system should send the
@@ -53,8 +56,11 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 		mNotifyMgr = (NotificationManager) context
 				.getSystemService(Activity.NOTIFICATION_SERVICE);
 
-		boolean checkingIn = intent.getExtras().getBoolean(
+		Bundle bundle = intent.getExtras();
+		boolean checkingIn = bundle.getBoolean(
 				CheckInOutReceiver.CHECKING_IN); 
+		stationID = bundle.getString("STATION_ID");
+		Log.d("STATION ID", stationID);
 		
 		new ServerRequestTask(context, user, checkingIn ? true : false).execute();
 	}
@@ -78,15 +84,12 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 					: R.string.checking_out);
 			try {
 				responseCode = requestServer(user, checkingIn ? "/checkin/"
-						+ user.getID() : "/checkout");
+						+ stationID : "/checkout");
 			} catch (ClientProtocolException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (URISyntaxException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			} catch (IOException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 			if (responseCode == 200) {
@@ -115,7 +118,7 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 					setButtonStatus(R.string.checked_in);
 					// Start the service
 					Intent in = new Intent(context, MyService.class);
-					in.putExtra(MyService.PARAM_MESSAGE,
+					in.putExtra(MyService.ENTER_MESSAGE,
 							MyService.ENTER_GEOFENCE);
 					context.startService(in);
 				} catch (IOException e) {

@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import dk.aau.rejsekortmobile.CheckInOutReceiver;
 import dk.aau.rejsekortmobile.MainActivity_;
+import dk.aau.rejsekortmobile.User;
 
 public class RejsekortMobileTest extends
 		ActivityInstrumentationTestCase2<MainActivity_> {
@@ -19,6 +20,7 @@ public class RejsekortMobileTest extends
 	private final String SERVER_INFO = "192.168.0.107:1337";
 	
 	SharedPreferences pref;
+	private User user;
 	
 	public RejsekortMobileTest() {
 		super("dk.aau.rejsekortmobile", MainActivity_.class);
@@ -30,6 +32,7 @@ public class RejsekortMobileTest extends
 		loginText = (TextView) mainActiv.findViewById(dk.aau.rejsekortmobile.R.id.loginText);
 		checkedInString = mainActiv.getString(dk.aau.rejsekortmobile.R.string.checked_in);
 		mainActiv.getString(dk.aau.rejsekortmobile.R.string.checked_in);
+		
 		checkInImg = (ImageView) mainActiv.findViewById(dk.aau.rejsekortmobile.R.id.checkInImg);
 		
 		pref = mainActiv.getApplicationContext().getSharedPreferences("Rejsekortmobile",
@@ -53,6 +56,7 @@ public class RejsekortMobileTest extends
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+		user = new User(1337, "Freddy Mercury", "testToken1234");
 	}
 	public void testPreconditions() {
 		assertNotNull(loginText);
@@ -74,4 +78,9 @@ public class RejsekortMobileTest extends
 		assertEquals(checkedInString, loginText.getText());
 	}
 	
+	public void testUserClassFromMainActivity(){
+		assertEquals(user.getID(), mainActiv.user.getID());
+		assertEquals(user.getName(), mainActiv.user.getName());
+		assertEquals(user.getAccessToken(), mainActiv.user.getAccessToken());
+	}
 }

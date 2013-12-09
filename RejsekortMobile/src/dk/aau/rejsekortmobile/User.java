@@ -44,14 +44,6 @@ public class User {
 		this.status = checkedIn;
 		return this.status;
 	}
-	
-//	public static void save(){
-//		
-//	}
-	
-	public static User load(){
-		return null;
-	}
 
 	public String getAccessToken() {
 		return accessToken;

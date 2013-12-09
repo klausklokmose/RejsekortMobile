@@ -168,10 +168,9 @@ public class MainActivity extends Activity {
 			loginText.setText("");
 			startLoading();
 
-			//Intent intent = new Intent(this, CheckInOutReceiver.class);
 			Intent intent = new Intent("dk.aau.rejsekortmobile.CHECK_IN");
 			intent.putExtra(CheckInOutReceiver.CHECKING_IN, true);
-			
+			intent.putExtra("STATION_ID", "1337");
 			sendBroadcast(intent);
 		}
 	}
@@ -205,7 +204,8 @@ public class MainActivity extends Activity {
 			// Start the service
 			//TODO
 			Intent in = new Intent(this, MyService.class);
-			in.putExtra(MyService.PARAM_MESSAGE, MyService.ENTER_GEOFENCE);
+			in.putExtra(MyService.ENTER_MESSAGE, MyService.ENTER_GEOFENCE);
+			in.putExtra("STATION_ID", "1337");
 			startService(in);
 		} else {
 			// save in shared preferences that the user is not in a geofence
