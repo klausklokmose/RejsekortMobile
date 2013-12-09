@@ -29,8 +29,8 @@
         </activity>
 
         <receiver
-            android:name="CheckInOut"
-            android:exported="false" >
+            android:name="CheckInOutReceiver"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="dk.aau.rejsekortmobile.CHECK_IN" />
             </intent-filter>

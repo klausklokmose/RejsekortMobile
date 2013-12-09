@@ -2,9 +2,11 @@ package dk.aau.rejsekortmobile;
 
 import java.util.ArrayList;
 
+import org.androidannotations.annotations.Background;
 import org.androidannotations.annotations.Click;
 import org.androidannotations.annotations.EActivity;
 import org.androidannotations.annotations.TextChange;
+import org.androidannotations.annotations.UiThread;
 import org.androidannotations.annotations.ViewById;
 
 import android.app.Activity;
@@ -24,7 +26,15 @@ import android.widget.ToggleButton;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends Activity {
+	protected static boolean isVisible;
+	protected static MainActivity main;
+	public void setVisible(boolean isVisible) {
+		MainActivity.isVisible = isVisible;
+	}
 
+	public static boolean isVisible() {
+		return isVisible;
+	}
 
 	@ViewById(R.id.checkInImg)
 	static ImageView checkInImg;
@@ -51,62 +61,80 @@ public class MainActivity extends Activity {
 	private MOT current_MOT;
 	private ArrayList<StationStop> visibleList;
 
-	public static User user = new User(1337, "Freddy Mercury");
+	public static User user = new User(1337, "Freddy Mercury", "testToken1234");
 	private static Animation animation;
 	private static SharedPreferences pref;
-	public static String serverAddress = "192.168.43.104";
-	public static String serverPort = "1337";
-
+	private static String[] SERVER_INFO;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		setVisible(true);
 		pref = getApplicationContext().getSharedPreferences("Rejsekortmobile",
 				Context.MODE_MULTI_PROCESS);
+		main = this;
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-
+		setVisible(true);
 		pref = getApplicationContext().getSharedPreferences("Rejsekortmobile",
 				Context.MODE_MULTI_PROCESS);
-
-		editAddress.setText(serverAddress);
-		editPort.setText(serverPort);
-
-		if (pref.getBoolean(CheckInOut.CHECKED_IN, false)) {
-			Log.d("PREF", "CHECKED IN");
-			user.setStatus(true);
-			loginText.setText("Checked in");
-		} else {
-			Log.d("PREF", "CHECKED OUT");
-			user.setStatus(false);
-			loginText.setText("Check in");
+		SERVER_INFO = getServerSettings(pref).split(":");
+		if(SERVER_INFO.length == 2){
+			editAddress.setText(SERVER_INFO[0]);
+			editPort.setText(SERVER_INFO[1]);			
 		}
-
+		/*
+		checkReceiver = new CheckInOutReceiver();
+		checkReceiver.setMainActivity(this);
+	    IntentFilter checkIntentFilter = new IntentFilter();
+	    checkIntentFilter.addAction("dk.aau.rejsekortmobile.CHECK_IN");
+	    registerReceiver(checkReceiver, checkIntentFilter);
+		*/
+		loadStatus();
 	}
-
-	private void startLoading() {
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		setVisible(false);
+		/*
+		if (this.checkReceiver!=null)
+	        unregisterReceiver(checkReceiver);
+	    */
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		setVisible(false);
+	}
+	@UiThread
+	void startLoading() {
 		animation = AnimationUtils.loadAnimation(this, R.anim.rotate);
 		animation.setRepeatCount(Animation.INFINITE);
 		checkInImg.startAnimation(animation);
 	}
-
-	public static void stopLoading() {
+	
+	public void stopLoading() {
 		animation.setRepeatCount(0);
-
-		if (pref.getBoolean(CheckInOut.CHECKED_IN, false)) {
-			Log.d("PREF", "CHECKED IN");
-			user.setStatus(true);
-			loginText.setText("Checked in");
-		} else {
-			Log.d("PREF", "CHECKED OUT");
-			user.setStatus(false);
-			loginText.setText("Check in");
-		}
 	}
-
+	
+	@Background
+	public void loadStatus(){
+		//startLoading();
+		int rString = user.isCheckedIn(pref) ? R.string.checked_in : R.string.check_in;
+		setButtonStatus(rString);
+		//stopLoading();
+	}
+	@UiThread
+	void setButtonStatus(int rString){
+		Log.d("setButtonStatus", rString+" : "+getString(rString));
+		loginText.setText(getString(rString));
+	}
+	/*
 	@TextChange(R.id.editAddress)
 	void m1(TextView editText, CharSequence s, int before) {
 		Log.d("CHANGE", "TEXT CHANGE " + s.toString());
@@ -118,69 +146,71 @@ public class MainActivity extends Activity {
 		Log.d("CHANGE", "Port CHANGE " + s.toString());
 		serverPort = s.toString();
 	}
-
+	*/
 	@Click
-	void checkoutClicked() {
-		// this is a manual overwrite!
-		pref = getApplicationContext().getSharedPreferences("Rejsekortmobile",
-				Context.MODE_MULTI_PROCESS);
-		SharedPreferences.Editor editor = pref.edit();
-		editor.putBoolean(CheckInOut.CHECKED_IN, false);
-		editor.commit();
+	void checkoutClicked() {		
 		Log.d("PREF", "CHECKED OUT");
-		user.setStatus(false);
-		// checkInImg.setImageResource(R.drawable.rejsekort_check_in);
-		loginText.setText("");
-		// progressBarSpinner.setVisibility(View.INVISIBLE);
-
-		// checkInImg.setImageResource(R.drawable.rejsekort_blanck);
-		// progressBarSpinner.setVisibility(View.VISIBLE);
+		saveServerSettings();
 		startLoading();
 
-		Intent intent = new Intent(this, CheckInOut.class);
-		intent.putExtra(CheckInOut.CHECKING_IN, false);
-		intent.setAction("dk.aau.rejsekortmobile.CHECK_IN");
+		Intent intent = new Intent("dk.aau.rejsekortmobile.CHECK_IN");
+		intent.putExtra(CheckInOutReceiver.CHECKING_IN, false);
 		sendBroadcast(intent);
 	}
 
 	@Click
 	void checkInImgClicked() {
 		NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-		mNotifyMgr.cancelAll();
-
-		if (!user.isCheckedIn()) {
+		saveServerSettings();
+		if (!user.isCheckedIn(pref)) {
+			mNotifyMgr.cancelAll();
 			checkInImg.setImageResource(R.drawable.rejsekort_blanck);
 			loginText.setText("");
-			// progressBarSpinner.setVisibility(View.VISIBLE);
 			startLoading();
 
-			Intent intent = new Intent(this, CheckInOut.class);
-			intent.putExtra(CheckInOut.CHECKING_IN, true);
-			intent.setAction("dk.aau.rejsekortmobile.CHECK_IN");
+			//Intent intent = new Intent(this, CheckInOutReceiver.class);
+			Intent intent = new Intent("dk.aau.rejsekortmobile.CHECK_IN");
+			intent.putExtra(CheckInOutReceiver.CHECKING_IN, true);
+			
 			sendBroadcast(intent);
 		}
 	}
-
+	
+	private void saveServerSettings(){
+		setStringPreference("SERVER", editAddress.getText().toString() + ":" + editPort.getText().toString());
+	}
+	
+	static String getServerSettings(SharedPreferences pref){
+		return pref.getString("SERVER", ":");
+	}
+	
+	private void setBoolPreference(String boolKey, boolean boolValue) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putBoolean(boolKey, boolValue);
+		editor.commit();
+	}
+	
+	private void setStringPreference(String stringKey, String stringValue) {
+		SharedPreferences.Editor editor = pref.edit();
+		editor.putString(stringKey, stringValue);
+		editor.commit();
+	}
+	
 	@Click
 	void geofenceToggleClicked() {
 		// if the user is inside a geofence
 		if (geofenceToggle.isChecked()) {
 			// Set this in the shared preferences
-
-			SharedPreferences.Editor editor = pref.edit();
-			editor.putBoolean(MyService.ENTER_GEOFENCE, true);
-			editor.commit();
+			setBoolPreference(MyService.ENTER_GEOFENCE, true);
 			// Start the service
+			//TODO
 			Intent in = new Intent(this, MyService.class);
 			in.putExtra(MyService.PARAM_MESSAGE, MyService.ENTER_GEOFENCE);
 			startService(in);
 		} else {
 			// save in shared preferences that the user is not in a geofence
-			SharedPreferences.Editor editor = pref.edit();
-			editor.putBoolean(MyService.ENTER_GEOFENCE, false);
-			editor.commit();
+			setBoolPreference(MyService.ENTER_GEOFENCE, false);
 		}
-		// progressBarSpinner.setVisibility(View.INVISIBLE);
 	}
 
 	// @Override

@@ -11,5 +11,11 @@
     <string name="leave_geofence">leave geofence</string>
     <string name="add_ssid">add SSID</string>
     <string name="manual_overwrite_checkout">Manual overwrite checkout</string>
+    <string name="checking_out">Checking out</string>
+    <string name="checking_in">Checking in</string>
+    <string name="check_out">Check-out</string>
+    <string name="getting_status">Getting Status</string>
+    <string name="checked_in">Checked In</string>
+    <string name="try_again">Try again</string>
 
 </resources>

@@ -12,7 +12,6 @@ import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Handler;
-import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -29,9 +28,9 @@ public class MyService extends IntentService {
 	private SharedPreferences pref;
 
 	@Override
-	protected void onHandleIntent(Intent intent) {
+	protected void onHandleIntent(Intent i) {
 		// TODO Auto-generated method stub
-		String message = getMessageFromIntent(intent);
+		String message = getMessageFromIntent(i);
 		Log.d("PARAMETER SENT TO SERVICE", message);
 
 		if (message.equals(ENTER_GEOFENCE)) {
@@ -43,11 +42,9 @@ public class MyService extends IntentService {
 
 			// get user's current location
 			String[] location = getUserLocation();
-			
 			// get nearby stations and bus stops
 			NBstationStops = getNBstationStops();
 			if (checkedIn) {
-
 				do {
 					// Look up SSIDs at least once
 					foundSSIDs = scanForSSIDs();
@@ -63,10 +60,12 @@ public class MyService extends IntentService {
 				if (currentTransitID != -1) {
 					setGeofenceForNextLogicalStops(location, currentTransitID);
 				} else {
-					Intent inte = new Intent(this, CheckInOut.class);
-					inte.putExtra(CheckInOut.CHECKING_IN, false);
-					inte.setAction("dk.aau.rejsekortmobile.CHECK_IN");
-					sendBroadcast(inte);
+					
+					Intent intent = new Intent("dk.aau.rejsekortmobile.CHECK_IN");
+					intent.setClass(getApplicationContext(), CheckInOutReceiver.class);
+					intent.putExtra(CheckInOutReceiver.CHECKING_IN, true);
+					sendBroadcast(intent);
+					
 				}
 
 			} else { //If user is not checked in
@@ -102,15 +101,17 @@ public class MyService extends IntentService {
 //			mBuilder.setSound(Uri.parse("android.resource://"
 //		            + getApplicationContext().getPackageName() + "/" + R.raw.siren));
 		mBuilder.setLights(Color.BLUE, 500, 500);
-		long[] pattern = {500,500,500,500,500,500,500,500,500,500,500,500};
+		long[] pattern = {500,500,500,500,500,500};
 		mBuilder.setVibrate(pattern);
 		//notification manager
 		NotificationManager mNotifyMgr = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 		// set up what will happen when the user presses the notification
-		Intent intent = new Intent(this, CheckInOut.class);
-		intent.setAction("dk.aau.rejsekortmobile.CHECK_IN");
-		intent.putExtra("CHECKING IN", true);
+
+
+		Intent intent = new Intent("dk.aau.rejsekortmobile.CHECK_IN");
+		intent.setClass(getApplicationContext(), CheckInOutReceiver.class);
+		intent.putExtra(CheckInOutReceiver.CHECKING_IN, true);
 
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				getApplicationContext(), 0, intent,
@@ -118,6 +119,7 @@ public class MyService extends IntentService {
 		mBuilder.setContentIntent(pendingIntent);
 		
 		mNotifyMgr.notify(1, mBuilder.build());
+		Log.d("Show Notification", CheckInOutReceiver.CHECKING_IN);
 
 	}
 	
@@ -160,7 +162,7 @@ public class MyService extends IntentService {
 	}
 
 	private boolean getUsersCheckInStatus() {
-		return pref.getBoolean(CheckInOut.CHECKED_IN, false);
+		return pref.getBoolean(CheckInOutReceiver.CHECKED_IN, false);
 	}
 
 	private void setupGeoFences(ArrayList<StationStop> nBstationStops2) {
@@ -193,7 +195,7 @@ public class MyService extends IntentService {
 		super.onCreate();
 		handler = new Handler();
 	}
-
+	
 	private String getMessageFromIntent(Intent intent) {
 		return intent.getExtras().getString(PARAM_MESSAGE);
 	}

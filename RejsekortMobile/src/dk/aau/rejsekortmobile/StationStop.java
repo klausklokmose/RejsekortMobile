@@ -1,6 +1,5 @@
 package dk.aau.rejsekortmobile;
 
-import android.location.Location;
 
 public class StationStop {
 

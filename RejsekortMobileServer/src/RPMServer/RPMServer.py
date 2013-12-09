@@ -4,6 +4,7 @@
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from traveler import Traveler
 from authentication import Authentication
+import socket
 
 Travellers = { 42 : Traveler(42, "Cem Turan", None), 43 : Traveler(43, "Klaus Klokmose Nielsen", None) }
 AccessTokens = {'testToken1234' : Authentication(42, 'testToken1234'), 'testToken5678' : Authentication(43, 'testToken5678')}
@@ -85,7 +86,7 @@ class requestHandler(BaseHTTPRequestHandler):
         
 try:
     server = HTTPServer((HOST, PORT), requestHandler)
-    print 'Started httpserver on port ' , PORT
+    print 'Started server on host:', socket.gethostbyname(socket.gethostname()), 'and port:' , PORT
     server.serve_forever()
 except KeyboardInterrupt:
     print '^C received, shutting down the web server'
