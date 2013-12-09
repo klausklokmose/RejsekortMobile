@@ -54,14 +54,9 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 				.getSystemService(Activity.NOTIFICATION_SERVICE);
 
 		boolean checkingIn = intent.getExtras().getBoolean(
-				CheckInOutReceiver.CHECKING_IN);
-		// should it try to check in?
-		if (checkingIn) {
-			new ServerRequestTask(context, user, true).execute();
-		} else { // try to check the user out
-			new ServerRequestTask(context, user, false).execute();
-		}
-
+				CheckInOutReceiver.CHECKING_IN); 
+		
+		new ServerRequestTask(context, user, checkingIn ? true : false).execute();
 	}
 
 	class ServerRequestTask extends AsyncTask<Void, Void, String> {

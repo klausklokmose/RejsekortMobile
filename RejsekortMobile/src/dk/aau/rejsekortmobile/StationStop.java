@@ -8,12 +8,10 @@ public class StationStop {
 	private int range;
 	private String[] coordinates = new String[2];
 	private int zone;
-
 	
-	public StationStop(int iD, String stationName, int range,
+	public StationStop(int ID, String stationName, int range,
 			String[] coordinates, int zone) {
-		super();
-		ID = iD;
+		this.ID = ID;
 		this.stationName = stationName;
 		this.range = range;
 		this.coordinates = coordinates;
