@@ -25,16 +25,12 @@ import android.widget.Toast;
 
 public class CheckInOutReceiver extends BroadcastReceiver {
 
-	public static final String CHECKED_IN = "CHECKED IN";
+	public static final String CHECKED_IN = "CHECKED IN",
+			CHECKING_IN = "CHECKING IN";
 
 	private String urlToServer = "";
-
 	private SharedPreferences pref;
-
-	public static final String CHECKING_IN = "CHECKING IN";
-
 	private MainActivity main;
-
 	NotificationManager mNotifyMgr;
 
 	/*
@@ -111,7 +107,7 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 				// Notification that the user is checked in (stays as long as
 				// the user is checked in)
 				NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-						context).setSmallIcon(R.drawable.rejsekort_logo)
+						context).setSmallIcon(R.drawable.ic_launcher)
 						.setContentTitle("Rejsekort status")
 						.setContentText("Checked in");
 				// The user cannot remove the notification
@@ -128,7 +124,6 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 							MyService.ENTER_GEOFENCE);
 					context.startService(in);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 
@@ -140,7 +135,6 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 					// removes any notifications from this app
 					mNotifyMgr.cancelAll();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			} else {

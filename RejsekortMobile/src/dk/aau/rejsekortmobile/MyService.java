@@ -92,7 +92,7 @@ public class MyService extends IntentService {
 	private void showNotification(String str) {
 		// Builds the notification and issues it.
 		NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
-				this).setSmallIcon(R.drawable.rejsekort_logo)
+				this).setSmallIcon(R.drawable.ic_launcher)
 				.setContentTitle("Entered geofence").setContentText(str);
 		// removes the notification when it is pressed by the user.
 		mBuilder.setAutoCancel(true);

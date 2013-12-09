@@ -19,7 +19,7 @@ public class RejsekortMobileTest extends
 		super.setUp();
 		mainActiv = this.getActivity();
 		loginText = (TextView) mainActiv.findViewById(dk.aau.rejsekortmobile.R.id.loginText);
-		resourceString = "Checked in";
+		resourceString = mainActiv.getString(dk.aau.rejsekortmobile.R.string.checked_in);
 		try {
 			runTestOnUiThread(new Runnable() {
 			    @Override
@@ -34,7 +34,10 @@ public class RejsekortMobileTest extends
 	public void testPreconditions() {
 		assertNotNull(loginText);
 	}
-	public void testText() {
+	public void testLoginTextChanged() {
 		assertEquals(resourceString, loginText.getText());
+	}
+	public void test(){
+		
 	}
 }
