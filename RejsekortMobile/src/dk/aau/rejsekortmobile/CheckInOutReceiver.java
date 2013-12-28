@@ -58,9 +58,11 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 
 		Bundle bundle = intent.getExtras();
 		boolean checkingIn = bundle.getBoolean(
-				CheckInOutReceiver.CHECKING_IN); 
-		stationID = bundle.getString("STATION_ID");
-		Log.d("STATION ID", stationID);
+				CheckInOutReceiver.CHECKING_IN);
+//		if(!checkingIn){
+			stationID = bundle.getString("STATION_ID");
+			Log.d("STATION ID", stationID);
+//		}
 		
 		new ServerRequestTask(context, user, checkingIn ? true : false).execute();
 	}
@@ -93,6 +95,7 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 				e1.printStackTrace();
 			}
 			if (responseCode == 200) {
+//				return "CHECKED IN";
 				return checkingIn ? "CHECKED IN" : "CHECKED OUT";
 			}
 			return "failure";
@@ -161,12 +164,14 @@ public class CheckInOutReceiver extends BroadcastReceiver {
 
 			// set up parameters such as connection timeout
 			HttpParams param = new BasicHttpParams();
-			HttpConnectionParams.setConnectionTimeout(param, 2500);
-			HttpConnectionParams.setSoTimeout(param, 2500);
+			HttpConnectionParams.setConnectionTimeout(param, 5000);
+			HttpConnectionParams.setSoTimeout(param, 5000);
 
 			HttpResponse response = new DefaultHttpClient(param)
 					.execute(getRequest);
 			responseCode = response.getStatusLine().getStatusCode();
+//			Toast.makeText(context, "Resonse code: "+responseCode, Toast.LENGTH_LONG).show();
+			Log.d("RESPONSE CODE", ""+responseCode);
 			return responseCode;
 		}
 	}

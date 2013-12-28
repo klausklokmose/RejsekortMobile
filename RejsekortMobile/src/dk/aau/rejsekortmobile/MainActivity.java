@@ -118,6 +118,7 @@ public class MainActivity extends Activity {
 		checkInImg.startAnimation(animation);
 	}
 	
+	@UiThread
 	public void stopLoading() {
 		animation.setRepeatCount(0);
 	}
@@ -155,6 +156,7 @@ public class MainActivity extends Activity {
 
 		Intent intent = new Intent("dk.aau.rejsekortmobile.CHECK_IN");
 		intent.putExtra(CheckInOutReceiver.CHECKING_IN, false);
+		intent.putExtra("STATION_ID", "1337");
 		sendBroadcast(intent);
 	}
 

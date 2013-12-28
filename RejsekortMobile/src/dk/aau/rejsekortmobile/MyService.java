@@ -34,7 +34,8 @@ public class MyService extends IntentService {
 			// get extras from the intent
 			enterMessage = getMessageFromIntent(i, ENTER_MESSAGE);
 			Log.d("PARAMETER SENT TO SERVICE", enterMessage);
-			stationID = getMessageFromIntent(i, STATION_ID);
+//			stationID = getMessageFromIntent(i, STATION_ID);
+			stationID = "1337";
 			if (stationID != null) {
 				Log.d("PARAMETER SENT TO SERVICE", stationID);
 			}
@@ -74,7 +75,7 @@ public class MyService extends IntentService {
 					intent.setClass(getApplicationContext(),
 							CheckInOutReceiver.class);
 					intent.putExtra(CheckInOutReceiver.CHECKING_IN, true);
-					intent.putExtra(STATION_ID, stationID);
+					intent.putExtra("STATION_ID", stationID);
 					sendBroadcast(intent);
 				}
 
@@ -123,6 +124,7 @@ public class MyService extends IntentService {
 		Intent intent = new Intent("dk.aau.rejsekortmobile.CHECK_IN");
 		intent.setClass(getApplicationContext(), CheckInOutReceiver.class);
 		intent.putExtra(CheckInOutReceiver.CHECKING_IN, true);
+		intent.putExtra(STATION_ID, "1337");
 
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(
 				getApplicationContext(), 0, intent,
